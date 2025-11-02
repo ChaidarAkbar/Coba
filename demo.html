@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Algoritma - Interactive Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8e7857 0%, #a89370 50%, #c4b5a0 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: #faf8f5;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid #d4c9b8;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8e7857 0%, #a89370 100%);
+            padding: 45px 40px;
+            text-align: center;
+            color: #faf8f5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect fill="rgba(255,255,255,0.03)" width="50" height="50"/><rect fill="rgba(255,255,255,0.03)" x="50" y="50" width="50" height="50"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 12px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.15em;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 45px;
+        }
+
+        .algorithm-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .algo-button {
+            background: linear-gradient(135deg, #8e7857 0%, #a89370 100%);
+            border: 2px solid transparent;
+            padding: 22px 20px;
+            border-radius: 14px;
+            color: #faf8f5;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(142, 120, 87, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .algo-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .algo-button:hover::before {
+            left: 100%;
+        }
+
+        .algo-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(142, 120, 87, 0.3);
+            border-color: #8e7857;
+        }
+
+        .algo-button.active {
+            background: linear-gradient(135deg, #6b5d47 0%, #8e7857 100%);
+            box-shadow: 0 6px 25px rgba(107, 93, 71, 0.5);
+            border-color: #5a4d3a;
+        }
+
+        .demo-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .demo-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .demo-title {
+            font-size: 2em;
+            color: #5a4d3a;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .demo-description {
+            color: #6b5d47;
+            margin-bottom: 28px;
+            line-height: 1.7;
+            font-size: 1.05em;
+        }
+
+        .input-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            color: #5a4d3a;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #d4c9b8;
+            border-radius: 12px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            background: #fff;
+            color: #5a4d3a;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #8e7857;
+            box-shadow: 0 0 0 3px rgba(142, 120, 87, 0.1);
+        }
+
+        input::placeholder {
+            color: #a89370;
+        }
+
+        .run-button {
+            background: linear-gradient(135deg, #8e7857 0%, #a89370 100%);
+            color: #faf8f5;
+            border: none;
+            padding: 17px 45px;
+            border-radius: 12px;
+            font-size: 1.15em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(142, 120, 87, 0.3);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .run-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .run-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .run-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 25px rgba(142, 120, 87, 0.4);
+        }
+
+        .run-button:active {
+            transform: translateY(0);
+        }
+
+        .run-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .result-box {
+            margin-top: 30px;
+            padding: 28px;
+            background: linear-gradient(135deg, rgba(142, 120, 87, 0.08) 0%, rgba(168, 147, 112, 0.08) 100%);
+            border-left: 5px solid #8e7857;
+            border-radius: 12px;
+            display: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .result-box.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #8e7857;
+            margin-bottom: 12px;
+            font-size: 1.15em;
+        }
+
+        .result-text {
+            color: #5a4d3a;
+            font-size: 1.2em;
+            line-height: 1.7;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #a89370;
+            font-size: 0.95em;
+            background: rgba(142, 120, 87, 0.05);
+            border-top: 1px solid #d4c9b8;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 2.2em;
+            }
+
+            .content {
+                padding: 30px 25px;
+            }
+
+            .algo-button {
+                padding: 18px 15px;
+                font-size: 1em;
+            }
+
+            .demo-title {
+                font-size: 1.6em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Demo Algoritma</h1>
+            <p>Coba algoritma secara interaktif dan real-time</p>
+        </div>
+
+        <div class="content">
+            <div class="algorithm-selector">
+                <button class="algo-button active" onclick="selectAlgorithm(1)">
+                    🎫 Ganjil Genap
+                </button>
+                <button class="algo-button" onclick="selectAlgorithm(2)">
+                    📐 Luas Persegi
+                </button>
+                <button class="algo-button" onclick="selectAlgorithm(3)">
+                    📊 Rata-Rata Nilai
+                </button>
+            </div>
+
+            <!-- Demo 1: Ganjil Genap -->
+            <div id="demo1" class="demo-section active">
+                <h2 class="demo-title">Sistem Pintu Masuk Berdasarkan Nomor Tiket</h2>
+                <p class="demo-description">
+                    Algoritma ini menentukan pintu masuk berdasarkan nomor tiket. 
+                    Nomor genap diarahkan ke Pintu A, nomor ganjil ke Pintu B.
+                </p>
+
+                <div class="input-group">
+                    <label for="ticketNumber">Nomor Tiket Anda:</label>
+                    <input type="number" id="ticketNumber" placeholder="Masukkan nomor tiket (contoh: 42)">
+                </div>
+
+                <button class="run-button" onclick="runGanjilGenap()">
+                    <span>Cek Pintu Masuk</span>
+                </button>
+
+                <div id="result1" class="result-box">
+                    <div class="result-label">📍 Hasil:</div>
+                    <div class="result-text" id="resultText1"></div>
+                </div>
+            </div>
+
+            <!-- Demo 2: Luas Persegi -->
+            <div id="demo2" class="demo-section">
+                <h2 class="demo-title">Kalkulator Luas Persegi</h2>
+                <p class="demo-description">
+                    Algoritma ini menghitung luas persegi berdasarkan panjang sisi yang dimasukkan. 
+                    Formula: Luas = sisi × sisi
+                </p>
+
+                <div class="input-group">
+                    <label for="sisiPersegi">Panjang Sisi Persegi (cm):</label>
+                    <input type="number" id="sisiPersegi" placeholder="Masukkan panjang sisi (contoh: 5)" step="0.01">
+                </div>
+
+                <button class="run-button" onclick="hitungLuasPersegi()">
+                    <span>Hitung Luas</span>
+                </button>
+
+                <div id="result2" class="result-box">
+                    <div class="result-label">📐 Hasil Perhitungan:</div>
+                    <div class="result-text" id="resultText2"></div>
+                </div>
+            </div>
+
+            <!-- Demo 3: Rata-Rata Nilai -->
+            <div id="demo3" class="demo-section">
+                <h2 class="demo-title">Kalkulator Rata-Rata Nilai Ujian</h2>
+                <p class="demo-description">
+                    Algoritma ini menghitung rata-rata dari tiga nilai ujian dan memberikan 
+                    kategori prestasi berdasarkan hasil yang diperoleh.
+                </p>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="nilai1">Nilai Ujian Pertama:</label>
+                        <input type="number" id="nilai1" placeholder="0-100" min="0" max="100">
+                    </div>
+                    <div class="input-group">
+                        <label for="nilai2">Nilai Ujian Kedua:</label>
+                        <input type="number" id="nilai2" placeholder="0-100" min="0" max="100">
+                    </div>
+                    <div class="input-group">
+                        <label for="nilai3">Nilai Ujian Ketiga:</label>
+                        <input type="number" id="nilai3" placeholder="0-100" min="0" max="100">
+                    </div>
+                </div>
+
+                <button class="run-button" onclick="hitungRataRata()">
+                    <span>Hitung Rata-Rata</span>
+                </button>
+
+                <div id="result3" class="result-box">
+                    <div class="result-label">📊 Hasil Perhitungan:</div>
+                    <div class="result-text" id="resultText3"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Made with Chaii | © 2025
+        </div>
+    </div>
+
+    <script>
+        function selectAlgorithm(num) {
+            // Update button states
+            const buttons = document.querySelectorAll('.algo-button');
+            buttons.forEach((btn, index) => {
+                btn.classList.toggle('active', index === num - 1);
+            });
+
+            // Update demo sections
+            const demos = document.querySelectorAll('.demo-section');
+            demos.forEach((demo, index) => {
+                demo.classList.toggle('active', index === num - 1);
+            });
+
+            // Hide all results
+            document.querySelectorAll('.result-box').forEach(box => {
+                box.classList.remove('show');
+            });
+        }
+
+        function runGanjilGenap() {
+            const ticketNumber = parseInt(document.getElementById('ticketNumber').value);
+            const resultBox = document.getElementById('result1');
+            const resultText = document.getElementById('resultText1');
+
+            if (isNaN(ticketNumber)) {
+                resultText.innerHTML = '⚠️ Mohon masukkan nomor tiket yang valid!';
+                resultBox.classList.add('show');
+                return;
+            }
+
+            let message;
+            if (ticketNumber % 2 === 0) {
+                message = `
+                    <strong>${ticketNumber}</strong> adalah nomor <strong style="color: #8e7857;">GENAP</strong><br>
+                    🚪 Harap menuju <strong>Pintu Masuk A</strong>
+                `;
+            } else {
+                message = `
+                    <strong>${ticketNumber}</strong> adalah nomor <strong style="color: #a89370;">GANJIL</strong><br>
+                    🚪 Harap menuju <strong>Pintu Masuk B</strong>
+                `;
+            }
+
+            resultText.innerHTML = message;
+            resultBox.classList.add('show');
+        }
+
+        function hitungLuasPersegi() {
+            const sisi = parseFloat(document.getElementById('sisiPersegi').value);
+            const resultBox = document.getElementById('result2');
+            const resultText = document.getElementById('resultText2');
+
+            if (isNaN(sisi) || sisi <= 0) {
+                resultText.innerHTML = '⚠️ Mohon masukkan panjang sisi yang valid (angka positif)!';
+                resultBox.classList.add('show');
+                return;
+            }
+
+            const luas = sisi * sisi;
+            const keliling = 4 * sisi;
+
+            const message = `
+                <div style="font-size: 1.1em;">
+                    <strong>📏 Panjang Sisi:</strong> ${sisi} cm<br><br>
+                    <strong style="color: #8e7857; font-size: 1.3em;">📐 Luas Persegi: ${luas.toFixed(2)} cm²</strong><br><br>
+                    <span style="color: #6b5d47;">Bonus: Keliling = ${keliling.toFixed(2)} cm</span>
+                </div>
+            `;
+
+            resultText.innerHTML = message;
+            resultBox.classList.add('show');
+        }
+
+        function hitungRataRata() {
+            const nilai1 = parseFloat(document.getElementById('nilai1').value);
+            const nilai2 = parseFloat(document.getElementById('nilai2').value);
+            const nilai3 = parseFloat(document.getElementById('nilai3').value);
+            const resultBox = document.getElementById('result3');
+            const resultText = document.getElementById('resultText3');
+
+            // Validasi input
+            if (isNaN(nilai1) || isNaN(nilai2) || isNaN(nilai3)) {
+                resultText.innerHTML = '⚠️ Mohon masukkan semua nilai ujian dengan benar!';
+                resultBox.classList.add('show');
+                return;
+            }
+
+            if (nilai1 < 0 || nilai1 > 100 || nilai2 < 0 || nilai2 > 100 || nilai3 < 0 || nilai3 > 100) {
+                resultText.innerHTML = '⚠️ Nilai harus berada dalam rentang 0-100!';
+                resultBox.classList.add('show');
+                return;
+            }
+
+            // Hitung total dan rata-rata
+            const total = nilai1 + nilai2 + nilai3;
+            const rataRata = total / 3.0;
+
+            // Tentukan kategori
+            let kategori = '';
+            let emoji = '';
+            let color = '';
+
+            if (rataRata >= 90) {
+                kategori = 'Istimewa (A)';
+                emoji = '🏆';
+                color = '#8e7857';
+            } else if (rataRata >= 80) {
+                kategori = 'Sangat Baik (B+)';
+                emoji = '⭐';
+                color = '#8e7857';
+            } else if (rataRata >= 70) {
+                kategori = 'Baik (B)';
+                emoji = '✨';
+                color = '#a89370';
+            } else if (rataRata >= 60) {
+                kategori = 'Cukup (C)';
+                emoji = '📝';
+                color = '#a89370';
+            } else {
+                kategori = 'Perlu Perbaikan (D)';
+                emoji = '📚';
+                color = '#c4b5a0';
+            }
+
+            const message = `
+                <div style="font-size: 1.05em; line-height: 1.9;">
+                    <strong>📋 Nilai Ujian:</strong><br>
+                    • Ujian 1: ${nilai1.toFixed(2)}<br>
+                    • Ujian 2: ${nilai2.toFixed(2)}<br>
+                    • Ujian 3: ${nilai3.toFixed(2)}<br><br>
+                    
+                    <strong>📊 Total Nilai:</strong> ${total.toFixed(2)}<br><br>
+                    
+                    <strong style="color: ${color}; font-size: 1.4em;">
+                        ${emoji} Rata-Rata: ${rataRata.toFixed(2)}
+                    </strong><br><br>
+                    
+                    <div style="background: rgba(142, 120, 87, 0.1); padding: 15px; border-radius: 8px; margin-top: 10px;">
+                        <strong>🎯 Kategori Prestasi:</strong><br>
+                        <span style="font-size: 1.2em; color: ${color};">${kategori}</span>
+                    </div>
+                </div>
+            `;
+
+            resultText.innerHTML = message;
+            resultBox.classList.add('show');
+        }
+
+        // Enter key support
+        document.getElementById('ticketNumber').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                runGanjilGenap();
+            }
+        });
+
+        document.getElementById('sisiPersegi').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                hitungLuasPersegi();
+            }
+        });
+
+        // Enter key untuk nilai ujian (pada input terakhir)
+        document.getElementById('nilai3').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                hitungRataRata();
+            }
+        });
+    </script>
+</body>
+</html>
