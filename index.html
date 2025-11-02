@@ -433,6 +433,11 @@
             document.querySelectorAll('.result-box').forEach(box => {
                 box.classList.remove('show');
             });
+
+            // Clear all inputs
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.value = '';
+            });
         }
 
         function runGanjilGenap() {
